@@ -1,27 +1,23 @@
-import type { Metadata } from "next";
-import { Bai_Jamjuree } from "next/font/google";
+// src/app/layout.tsx
 import "./globals.css";
 import { Auth0ProviderWrapper } from "./Auth0Provider";
+import { Metadata } from "next";
 
-const baiJamjuree = Bai_Jamjuree({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-bai"
-});
-
+// (Optional) Metadata for your app
 export const metadata: Metadata = {
-  title: "DIG - DiversiCloud Multi-Cloud Orchestrator",
-  description: "Multi-cloud infrastructure management platform",
+  title: "DiversiCloud Orchestrator",
+  description: "Multi-Cloud orchestration manager",
 };
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
-      <body className={`${baiJamjuree.variable} font-sans antialiased`}>
+      <body>
+        {/* Auth0 will redirect into /loading after login */}
         <Auth0ProviderWrapper>
           {children}
         </Auth0ProviderWrapper>
