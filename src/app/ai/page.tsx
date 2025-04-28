@@ -41,7 +41,7 @@ export default function AIPage() {
       {/* Glass card */}
       <div className="relative z-10 w-full max-w-md px-6">
         <div className="bg-white/10 backdrop-blur-sm rounded-xl p-8 space-y-6">
-          <h2 className="text-white text-3xl font-bold text-center">Ask the AI</h2>
+          <h2 className="text-white text-3xl font-bold text-center">AI Assistant</h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <textarea
@@ -54,7 +54,7 @@ export default function AIPage() {
                 px-4 py-2
                 bg-white/20 border border-white/30
                 rounded-lg
-                text-black placeholder-black/50
+                font-semibold text-white placeholder-white/50
                 focus:outline-none focus:ring-2 focus:ring-white/50
                 transition
               "
@@ -82,8 +82,8 @@ export default function AIPage() {
 
           {reply && (
             <div className="mt-4 p-4 bg-white/20 rounded-lg">
-              <h3 className="font-semibold text-black mb-2">AI says:</h3>
-              <p className="text-black whitespace-pre-wrap">{reply}</p>
+              <h3 className="font-semibold text-white mb-2">AI says:</h3>
+              <p className="text-white whitespace-pre-wrap">{reply}</p>
             </div>
           )}
         </div>
