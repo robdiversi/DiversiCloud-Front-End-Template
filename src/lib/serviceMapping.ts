@@ -64,12 +64,7 @@ export const serviceMapping: Record<string, Record<string, CloudNames>> = {
     "Infrastructure as Code": { aws: "CloudFormation",    azure: "ARM/Bicep",           gcp: "Deployment Manager" },
   },
 
-  "Management & Governance": {
-    "Cost Management":        { aws: "Cost Explorer",     azure: "Cost Management",     gcp: "Cloud Billing Reports" },
-    "Resource Management":    { aws: "Resource Groups",    azure: "Resource Groups",     gcp: "Resource Manager" },
-    "Policy & Compliance":    { aws: "Config & GuardDuty",azure: "Policy Insights",     gcp: "Organization Policy" },
-    "Tagging & Metadata":     { aws: "Tag Editor",        azure: "Tags",                gcp: "Labels" },
-  },
+
 
   "IoT & Edge": {
     "Device Management":      { aws: "IoT Core",          azure: "IoT Hub",             gcp: "IoT Core" },
