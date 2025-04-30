@@ -1,4 +1,3 @@
-// src/components/OpenAIChat.tsx
 'use client'
 import { useState } from 'react'
 
@@ -32,7 +31,7 @@ export function OpenAIChat() {
         disabled={loading}
         className="px-4 py-2 bg-white text-[#346066] rounded hover:bg-white/90 transition"
       >
-        {loading ? 'Thinking…' : 'Send to OpenAI'}
+        {loading ? 'Hmmmmmmm let me see…' : 'Send to OpenAI'}
       </button>
       {response && (
         <div className="p-4 bg-white/20 rounded">

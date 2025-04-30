@@ -6,7 +6,7 @@ import { Metadata } from "next";
 // (Optional) Metadata for your app
 export const metadata: Metadata = {
   title: "DiversiCloud Orchestrator",
-  description: "Multi-Cloud orchestration manager",
+  description: "MultiCloud orchestration manager",
 };
 
 export default function RootLayout({

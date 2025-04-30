@@ -30,7 +30,7 @@ export default function DashboardPage() {
         {/* Page heading */}
         <header className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-white">
-            DiversiCloud Dashboard
+            DiversiCloud MultiCloud Pricing Tool
           </h1>
           <div className="text-white/70 text-sm">
             Cloud pricing data updated: April 2025

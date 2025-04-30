@@ -83,27 +83,6 @@
 @keyframes echo-1     { 0%,100%{transform:scale(1.05);opacity:.4} 50%{transform:scale(1.08);opacity:.2} }
 @keyframes echo-2     { 0%,100%{transform:scale(1.1);opacity:.2} 50%{transform:scale(1.15);opacity:.1} }
 
-/* Animation for fading elements in */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fadeIn {
-  animation: fadeIn 0.3s ease-out forwards;
-}
-
-.animate-pulse-subtle { animation: pulse-subtle 3s ease-in-out infinite; }
-.animate-glow         { animation: glow 4s ease-in-out infinite; }
-.animate-echo-1       { animation: echo-1 5s ease-in-out infinite; }
-.animate-echo-2       { animation: echo-2 6s ease-in-out infinite; }
-
 @keyframes boxOverlap1 {
   0% { transform: translate(0,0); }
   50% { transform: translate(20px,20px); }
@@ -118,18 +97,6 @@
   100%{ transform: translate(0,0); }
 }
 
-@keyframes loading {
-  0% { transform: translateX(-100%); }
-  50%{ transform: translateX(100%); }
-  100%{ transform: translateX(-100%); }
-}
-
-@keyframes pulse      { 0%{opacity:.3} 50%{opacity:.8} 100%{opacity:.3} }
-@keyframes pulse-subtle{ 0%,100%{opacity:1} 50%{opacity:.8} }
-@keyframes glow       { 0%,100%{opacity:.5;transform:scale(1.1)} 50%{opacity:.2;transform:scale(1)} }
-@keyframes echo-1     { 0%,100%{transform:scale(1.05);opacity:.4} 50%{transform:scale(1.08);opacity:.2} }
-@keyframes echo-2     { 0%,100%{transform:scale(1.1);opacity:.2} 50%{transform:scale(1.15);opacity:.1} }
-
 /* Animation for fading elements in */
 @keyframes fadeIn {
   from {
@@ -150,3 +117,170 @@
 .animate-glow         { animation: glow 4s ease-in-out infinite; }
 .animate-echo-1       { animation: echo-1 5s ease-in-out infinite; }
 .animate-echo-2       { animation: echo-2 6s ease-in-out infinite; }
+
+/**********************
+ *  CUSTOM SCROLLBAR  *
+ **********************/
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+/**********************
+ *  MARKDOWN STYLING  *
+ **********************/
+.prose {
+  color: inherit;
+  max-width: none;
+}
+
+.prose h1, 
+.prose h2, 
+.prose h3 {
+  color: white;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.prose h1 {
+  font-size: 1.5rem;
+}
+
+.prose h2 {
+  font-size: 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0.25rem;
+  margin-top: 1.5rem;
+}
+
+.prose h3 {
+  font-size: 1.1rem;
+  margin-top: 1.25rem;
+}
+
+.prose p {
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+}
+
+.prose ul, 
+.prose ol {
+  margin-top: 0.5rem;
+  margin-bottom: 0.75rem;
+  padding-left: 1.5rem;
+}
+
+.prose li {
+  margin-bottom: 0.25rem;
+}
+
+.prose li:last-child {
+  margin-bottom: 0;
+}
+
+.prose ul > li {
+  list-style-type: disc;
+}
+
+.prose ol > li {
+  list-style-type: decimal;
+}
+
+.prose table {
+  width: 100%;
+  margin-top: 0.75rem;
+  margin-bottom: 1rem;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.prose th, 
+.prose td {
+  padding: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  text-align: left;
+}
+
+.prose th {
+  background-color: rgba(255, 255, 255, 0.1);
+  font-weight: 600;
+}
+
+.prose tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.prose code {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 0.1rem 0.3rem;
+  border-radius: 0.25rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.9em;
+}
+
+.prose pre {
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 0.375rem;
+  padding: 0.75rem 1rem;
+  overflow-x: auto;
+  margin: 0.75rem 0;
+}
+
+.prose pre code {
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
+  color: white;
+}
+
+.prose blockquote {
+  border-left: 3px solid rgba(255, 255, 255, 0.3);
+  padding-left: 1rem;
+  margin-left: 0;
+  margin-right: 0;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.prose hr {
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  margin: 2rem 0;
+}
+
+.prose a {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 255, 255, 0.4);
+  text-underline-offset: 2px;
+  transition: text-decoration-color 0.2s;
+}
+
+.prose a:hover {
+  text-decoration-color: rgba(255, 255, 255, 0.9);
+}
+
+/* Fix for code blocks within lists */
+.prose li > pre {
+  margin-top: 0.5rem;
+}

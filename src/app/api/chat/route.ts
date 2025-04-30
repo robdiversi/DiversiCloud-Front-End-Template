@@ -1,181 +1,227 @@
-'use client';
+// src/app/api/chat/route.ts
+import { NextResponse } from 'next/server'
+import OpenAI from 'openai'
 
-import { useState } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
-interface AIRecommendationProps {
-  category?: string;
-  service?: string;
-  prices?: {
-    aws?: { price: number; unit: string };
-    azure?: { price: number; unit: string };
-    gcp?: { price: number; unit: string };
-  };
-}
-
-// These match the mapping in the API route.ts file
+// Service mappings with expanded information including pricing estimates
 const SERVICE_MAPPING = {
   "Virtual Machines": {
-    aws: "EC2",
-    azure: "Virtual Machines",
-    gcp: "Compute Engine"
+    aws: { 
+      name: "EC2", 
+      pricing: "t3.medium: ~$0.0416/hour, m5.large: ~$0.096/hour",
+      features: "Elastic compute, auto-scaling, spot instances available"
+    },
+    azure: { 
+      name: "Virtual Machines", 
+      pricing: "B2s: ~$0.0416/hour, D2s v3: ~$0.096/hour",
+      features: "Azure Hybrid Benefit, reserved instances, availability sets"
+    },
+    gcp: { 
+      name: "Compute Engine", 
+      pricing: "e2-medium: ~$0.03351/hour, n2-standard-2: ~$0.0971/hour",
+      features: "Sustained use discounts, preemptible VMs, custom machine types"
+    }
+  },
+  "Virtual Desktop": {
+    aws: { 
+      name: "WorkSpaces", 
+      pricing: "Standard bundle: ~$35/month or ~$9.75/month + $0.26/hour",
+      features: "AD integration, Windows/Linux options, regional availability"
+    },
+    azure: { 
+      name: "Azure Virtual Desktop", 
+      pricing: "Base compute: ~$0.09/hour per user + storage (~$0.05/GB/month)",
+      features: "Multi-session Windows 10/11, Microsoft 365 integration, pay-as-you-go model"
+    },
+    gcp: { 
+      name: "Through partners (Citrix/VMware)", 
+      pricing: "VM costs (~$0.095/hour) + partner licensing fees",
+      features: "Partner ecosystem, custom configurations, GCP infrastructure"
+    }
   },
   "Object Storage": {
-    aws: "S3",
-    azure: "Blob Storage",
-    gcp: "Cloud Storage"
+    aws: { 
+      name: "S3", 
+      pricing: "Standard: ~$0.023/GB/month, Infrequent Access: ~$0.0125/GB/month",
+      features: "Lifecycle policies, versioning, cross-region replication"
+    },
+    azure: { 
+      name: "Blob Storage", 
+      pricing: "Hot: ~$0.0184/GB/month, Cool: ~$0.01/GB/month",
+      features: "Access tiers, soft delete, immutable storage"
+    },
+    gcp: { 
+      name: "Cloud Storage", 
+      pricing: "Standard: ~$0.02/GB/month, Nearline: ~$0.01/GB/month",
+      features: "Object lifecycle management, retention policies"
+    }
   },
   "SQL Database": {
-    aws: "RDS",
-    azure: "SQL Database",
-    gcp: "Cloud SQL"
-  }
-};
-
-export function AIRecommendation({ category, service, prices }: AIRecommendationProps) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [recommendation, setRecommendation] = useState<string | null>(null);
-
-  const generateRecommendation = async () => {
-    if (!category || !service) return;
-    
-    setIsLoading(true);
-    
-    try {
-      // This matches the API structure found in route.ts
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'gpt-4o', 
-          prompt: generatePrompt(category, service, prices),
-        }),
-      });
-      
-      const data = await response.json();
-      
-      // Based on the API route file, the response field is named 'completion'
-      if (data.completion) {
-        setRecommendation(data.completion);
-      } else if (data.text) {
-        // Alternative field name as a fallback
-        setRecommendation(data.text);
-      } else {
-        throw new Error('Invalid API response format');
-      }
-    } catch (error) {
-      console.error('Error generating recommendation:', error);
-      setRecommendation('Sorry, I had trouble generating a recommendation. Please try again later.');
-    } finally {
-      setIsLoading(false);
+    aws: { 
+      name: "RDS", 
+      pricing: "db.t3.medium: ~$0.082/hour, + storage at $0.115/GB/month",
+      features: "Multi-AZ deployments, read replicas, automated backups"
+    },
+    azure: { 
+      name: "SQL Database", 
+      pricing: "General Purpose: ~$0.086/hour, + storage at $0.115/GB/month",
+      features: "Geo-replication, automatic tuning, elastic pools"
+    },
+    gcp: { 
+      name: "Cloud SQL", 
+      pricing: "db-n1-standard-1: ~$0.0745/hour, + storage at $0.17/GB/month",
+      features: "Automated backups, high availability configuration"
     }
-  };
-
-  // Generate a context-aware prompt based on the selected service and pricing data
-  // Combines the systemPrompt approach from the API route file with specific pricing details
-  const generatePrompt = (category: string, service: string, prices?: any) => {
-    // Get the service mappings for this service if available
-    const serviceNames = service in SERVICE_MAPPING 
-      ? SERVICE_MAPPING[service as keyof typeof SERVICE_MAPPING]
-      : { aws: service, azure: service, gcp: service };
-    
-    // Format the service mapping similar to the API route
-    const mappingText = `${service}: AWS → ${serviceNames.aws}, Azure → ${serviceNames.azure}, GCP → ${serviceNames.gcp}`;
-    
-    // Format pricing information if available
-    let pricingInfo = '';
-    if (prices) {
-      if (prices.aws) {
-        pricingInfo += `\n- AWS (${serviceNames.aws}): $${prices.aws.price.toFixed(6)} per ${prices.aws.unit}`;
-      }
-      
-      if (prices.azure) {
-        pricingInfo += `\n- Azure (${serviceNames.azure}): $${prices.azure.price.toFixed(6)} per ${prices.azure.unit}`;
-      }
-      
-      if (prices.gcp) {
-        pricingInfo += `\n- GCP (${serviceNames.gcp}): $${prices.gcp.price.toFixed(6)} per ${prices.gcp.unit}`;
-      }
+  },
+  "NoSQL Database": {
+    aws: { 
+      name: "DynamoDB", 
+      pricing: "On-demand: $1.25 per million write requests, $0.25 per million read requests",
+      features: "Auto-scaling, global tables, point-in-time recovery"
+    },
+    azure: { 
+      name: "Cosmos DB", 
+      pricing: "Serverless: $0.12 per million RUs for writes, $0.012 per million RUs for reads",
+      features: "Multiple consistency levels, global distribution"
+    },
+    gcp: { 
+      name: "Firestore/Bigtable", 
+      pricing: "Firestore: $0.18 per GB/month, $0.06 per 100K reads",
+      features: "Real-time synchronization, automatic multi-region replication"
     }
-    
-    // Combine the system prompt approach with specific request
-    const prompt = `I need recommendations for ${category} > ${service}.
-
-Service mapping: ${mappingText}
-
-Current pricing:${pricingInfo}
-
-Please provide:
-• A breakdown of pros & cons per provider
-• Cost estimate comparison for typical workloads
-• Highlight price differences (e.g. "AWS is 10% cheaper than Azure for this workload")
-• Specific cost optimization strategies for each provider
-• Best value recommendation with justification
-
-Keep your response concise, focused on actionable advice, and under 150 words.`;
-    
-    return prompt;
-  };
-
-  if (!category || !service) {
-    return null;
+  },
+  "Serverless Functions": {
+    aws: { 
+      name: "Lambda", 
+      pricing: "$0.20 per million requests, $0.0000166667 per GB-second",
+      features: "Up to 15min execution, 10GB memory, concurrency controls"
+    },
+    azure: { 
+      name: "Functions", 
+      pricing: "$0.20 per million executions, $0.000016 per GB-second",
+      features: "Durable functions, integrated security model"
+    },
+    gcp: { 
+      name: "Cloud Functions", 
+      pricing: "$0.40 per million invocations, $0.0000025 per GB-second",
+      features: "Background functions, direct triggering from HTTP"
+    }
+  },
+  "Container Orchestration": {
+    aws: { 
+      name: "EKS/ECS", 
+      pricing: "EKS: $0.10 per hour per cluster, + EC2/Fargate costs",
+      features: "Managed control plane, Fargate integration"
+    },
+    azure: { 
+      name: "AKS", 
+      pricing: "Control plane: Free, + VM costs",
+      features: "Dev Spaces, Azure Policy integration"
+    },
+    gcp: { 
+      name: "GKE", 
+      pricing: "Standard: $0.10 per hour per cluster, Autopilot: ~ $0.035/hour/pod",
+      features: "Autopilot mode, auto-scaling, node auto-provisioning"
+    }
+  },
+  "Content Delivery": {
+    aws: { 
+      name: "CloudFront", 
+      pricing: "Data transfer out: $0.085/GB for first 10TB",
+      features: "Global edge network, field-level encryption"
+    },
+    azure: { 
+      name: "CDN", 
+      pricing: "Data transfer: $0.081/GB for first 10TB",
+      features: "Rules engine, analytics, dynamic site acceleration"
+    },
+    gcp: { 
+      name: "Cloud CDN", 
+      pricing: "Data transfer: $0.08/GB for first 10TB",
+      features: "Connected to Cloud Load Balancing, cache invalidation"
+    }
   }
+}
 
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center space-x-2">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white">
-            <path d="M9.5 3.5L12 2L14.5 3.5L17 2L19.5 3.5V7.5L22 10L19.5 12.5V16.5L17 18L14.5 16.5L12 18L9.5 16.5L7 18L4.5 16.5V12.5L2 10L4.5 7.5V3.5L7 2L9.5 3.5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M12 10L16 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M12 10L8 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M12 10L12 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          <span>AI Cost Optimization</span>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {recommendation ? (
-          <div className="text-white/90 p-4 bg-white/5 rounded-lg border border-white/10">
-            <p>{recommendation}</p>
-          </div>
-        ) : (
-          <p className="text-white/70">
-            Get personalized cost optimization recommendations based on your selected services and configuration.
-          </p>
-        )}
-        
-        <button
-          onClick={generateRecommendation}
-          disabled={isLoading}
-          className="w-full py-2 bg-white/10 hover:bg-white/20 text-white font-medium rounded-lg border border-white/20 transition-colors flex items-center justify-center space-x-2"
-        >
-          {isLoading ? (
-            <>
-              <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              <span>Generating AI recommendation...</span>
-            </>
-          ) : (
-            <>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white">
-                <path d="M12 16C14.2091 16 16 14.2091 16 12C16 9.79086 14.2091 8 12 8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M12 2V4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M12 20V22" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M4.93 4.93L6.34 6.34" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M17.66 17.66L19.07 19.07" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M2 12H4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M20 12H22" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M4.93 19.07L6.34 17.66" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M17.66 6.34L19.07 4.93" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <span>Get AI Recommendation</span>
-            </>
-          )}
-        </button>
-      </CardContent>
-    </Card>
-  );
+export async function POST(req: Request) {
+  try {
+    const { prompt, model = 'gpt-4o', conversation = [] } = await req.json()
+
+    // Enhanced system prompt with more comprehensive guidance and clearer terminology
+    const system = {
+      role: 'system' as const,
+      content: `
+You are a senior cloud architect specializing in multi-cloud environments and cost optimization. Your expertise covers AWS, Azure, and GCP with deep knowledge of service capabilities, pricing models, and architectural trade-offs.
+
+When discussing cloud services, integrate these specific pricing details and features:
+${Object.entries(SERVICE_MAPPING).map(([service, providers]) => `
+• ${service}:
+  - AWS ${providers.aws.name}: ${providers.aws.pricing}
+    Features: ${providers.aws.features}
+  - Azure ${providers.azure.name}: ${providers.azure.pricing}
+    Features: ${providers.azure.features}
+  - GCP ${providers.gcp.name}: ${providers.gcp.pricing}
+    Features: ${providers.gcp.features}
+`).join('\n')}
+
+When responding to comparison requests:
+
+• Format your response using Markdown with clear headers (## for main sections, ### for subsections)
+• Use bullet points and tables when comparing features or prices
+• Include specific pricing examples with dollar amounts
+• Create proper comparisons between equivalent tiers across providers
+
+Your response should include these clearly labeled sections:
+
+## PERFORMANCE ANALYSIS
+Analyze performance characteristics of each implementation and when each is optimal.
+
+## PRICING BREAKDOWN
+Provide detailed per-provider cost comparisons with actual numbers for equivalent services.
+
+## COST OPTIMIZATION
+Suggest specific strategies for each provider (reserved instances, spot pricing, etc.)
+
+## ARCHITECTURAL CONSIDERATIONS
+Highlight service limitations or advantages affecting system design.
+
+## TOTAL COST OF OWNERSHIP COMPARISON
+Explain total cost of ownership beyond hourly rates, including hidden costs, operational overhead, and long-term financial implications.
+
+## RECOMMENDATION
+Provide a clear, justified recommendation based on the workload needs.
+
+Remember that lowest price isn't always best choice - explain when paying more provides better value.
+
+Always use plain language and explain technical terms when they first appear.
+`
+    }
+
+    // Create messages array with conversation history
+    const messages = [
+      system,
+      ...conversation.map((msg: any) => ({
+        role: msg.role,
+        content: msg.content
+      })),
+      { role: 'user' as const, content: prompt }
+    ]
+    
+    const chat = await openai.chat.completions.create({
+      model,
+      messages,
+      temperature: 0.2,
+      max_tokens: 1500 // Allow for detailed responses
+    })
+
+    const reply = chat.choices[0].message?.content ?? ''
+    return NextResponse.json({ completion: reply })
+  } catch (error: any) {
+    console.error('Error in OpenAI API call:', error)
+    return NextResponse.json(
+      { error: error.message || 'Failed to generate recommendation' },
+      { status: 500 }
+    )
+  }
 }
