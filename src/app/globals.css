@@ -38,8 +38,6 @@
     --radius: 0.5rem;
   }
 
-  /* dark-mode palette can go here if needed */
-
   /* -------  BASE TAGS  ------- */
   * {
     border-color: hsl(var(--border));
@@ -61,27 +59,92 @@
 /**********************
  *  ANIMATIONS        *
  **********************/
-@keyframes boxOverlap1 {
-  0% { transform: translate(0,0); }
-  50% { transform: translate(20px,20px); }
-  100%{ transform: translate(0,0); }
+@keyframes boxMoveHorizontal1 {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(-15px); }
+  100% { transform: translateX(0); }
 }
-@keyframes boxOverlap2 { /* stays static for subtle depth */ }
-@keyframes boxOverlap3 {
-  0% { transform: translate(0,0); }
-  50% { transform: translate(-20px,-20px); }
-  100%{ transform: translate(0,0); }
+
+@keyframes boxMoveHorizontal2 {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(15px); }
+  100% { transform: translateX(0); }
 }
+
 @keyframes loading {
   0% { transform: translateX(-100%); }
   50%{ transform: translateX(100%); }
   100%{ transform: translateX(-100%); }
 }
+
 @keyframes pulse      { 0%{opacity:.3} 50%{opacity:.8} 100%{opacity:.3} }
 @keyframes pulse-subtle{ 0%,100%{opacity:1} 50%{opacity:.8} }
 @keyframes glow       { 0%,100%{opacity:.5;transform:scale(1.1)} 50%{opacity:.2;transform:scale(1)} }
 @keyframes echo-1     { 0%,100%{transform:scale(1.05);opacity:.4} 50%{transform:scale(1.08);opacity:.2} }
 @keyframes echo-2     { 0%,100%{transform:scale(1.1);opacity:.2} 50%{transform:scale(1.15);opacity:.1} }
+
+/* Animation for fading elements in */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-pulse-subtle { animation: pulse-subtle 3s ease-in-out infinite; }
+.animate-glow         { animation: glow 4s ease-in-out infinite; }
+.animate-echo-1       { animation: echo-1 5s ease-in-out infinite; }
+.animate-echo-2       { animation: echo-2 6s ease-in-out infinite; }
+
+@keyframes boxOverlap1 {
+  0% { transform: translate(0,0); }
+  50% { transform: translate(20px,20px); }
+  100%{ transform: translate(0,0); }
+}
+
+@keyframes boxOverlap2 { /* stays static for subtle depth */ }
+
+@keyframes boxOverlap3 {
+  0% { transform: translate(0,0); }
+  50% { transform: translate(-20px,-20px); }
+  100%{ transform: translate(0,0); }
+}
+
+@keyframes loading {
+  0% { transform: translateX(-100%); }
+  50%{ transform: translateX(100%); }
+  100%{ transform: translateX(-100%); }
+}
+
+@keyframes pulse      { 0%{opacity:.3} 50%{opacity:.8} 100%{opacity:.3} }
+@keyframes pulse-subtle{ 0%,100%{opacity:1} 50%{opacity:.8} }
+@keyframes glow       { 0%,100%{opacity:.5;transform:scale(1.1)} 50%{opacity:.2;transform:scale(1)} }
+@keyframes echo-1     { 0%,100%{transform:scale(1.05);opacity:.4} 50%{transform:scale(1.08);opacity:.2} }
+@keyframes echo-2     { 0%,100%{transform:scale(1.1);opacity:.2} 50%{transform:scale(1.15);opacity:.1} }
+
+/* Animation for fading elements in */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out forwards;
+}
 
 .animate-pulse-subtle { animation: pulse-subtle 3s ease-in-out infinite; }
 .animate-glow         { animation: glow 4s ease-in-out infinite; }
